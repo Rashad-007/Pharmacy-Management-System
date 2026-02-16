@@ -76,6 +76,34 @@ exports.addMedicine = async (req, res, next) => {
             });
         }
 
+        // Check for duplicates (same name and batch number)
+        if (batch_number) {
+            const [existing] = await db.query(
+                'SELECT id FROM medicines WHERE name = ? AND batch_number = ?',
+                [name, batch_number]
+            );
+
+            if (existing.length > 0) {
+                return res.status(409).json({
+                    success: false,
+                    message: 'Medicine with this name and batch number already exists'
+                });
+            }
+        } else {
+            // If no batch number, check just by name
+            const [existing] = await db.query(
+                'SELECT id FROM medicines WHERE name = ? AND batch_number IS NULL',
+                [name]
+            );
+
+            if (existing.length > 0) {
+                return res.status(409).json({
+                    success: false,
+                    message: 'Medicine with this name already exists'
+                });
+            }
+        }
+
         const [result] = await db.query(
             `INSERT INTO medicines (name, generic_name, category, manufacturer, description,
        unit_price, stock_quantity, reorder_level, expiry_date, batch_number, barcode,
@@ -97,6 +125,13 @@ exports.addMedicine = async (req, res, next) => {
             data: { id: result.insertId }
         });
     } catch (error) {
+        // Handle unique constraint violation from database
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({
+                success: false,
+                message: 'This medicine already exists in the database'
+            });
+        }
         next(error);
     }
 };

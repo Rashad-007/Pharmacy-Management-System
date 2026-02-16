@@ -2,12 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
 
-// Import pages (to be created)
+// Import pages
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import Billing from './pages/Billing';
+import Navbar from './components/Common/Navbar';
 
 const theme = createTheme({
     palette: {
@@ -23,6 +25,13 @@ const theme = createTheme({
 function App() {
     const isAuthenticated = localStorage.getItem('token');
 
+    const AuthenticatedLayout = ({ children }) => (
+        <Box>
+            <Navbar />
+            {children}
+        </Box>
+    );
+
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
@@ -31,15 +40,15 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route
                         path="/dashboard"
-                        element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />}
+                        element={isAuthenticated ? <AuthenticatedLayout><Dashboard /></AuthenticatedLayout> : <Navigate to="/login" />}
                     />
                     <Route
                         path="/inventory"
-                        element={isAuthenticated ? <Inventory /> : <Navigate to="/login" />}
+                        element={isAuthenticated ? <AuthenticatedLayout><Inventory /></AuthenticatedLayout> : <Navigate to="/login" />}
                     />
                     <Route
                         path="/billing"
-                        element={isAuthenticated ? <Billing /> : <Navigate to="/login" />}
+                        element={isAuthenticated ? <AuthenticatedLayout><Billing /></AuthenticatedLayout> : <Navigate to="/login" />}
                     />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
                 </Routes>

@@ -19,14 +19,24 @@ function Login() {
         setLoading(true);
 
         try {
+            console.log('Attempting login with:', email);
             const response = await api.post('/auth/login', { email, password });
 
+            console.log('Login response:', response.data);
+
             if (response.data.success) {
+                console.log('Login successful, storing token and redirecting...');
                 localStorage.setItem('token', response.data.data.token);
                 localStorage.setItem('user', JSON.stringify(response.data.data.user));
-                navigate('/dashboard');
+
+                // Force navigation
+                window.location.href = '/dashboard';
+            } else {
+                console.error('Login failed:', response.data);
+                setError(response.data.message || 'Login failed');
             }
         } catch (err) {
+            console.error('Login error:', err);
             setError(err.response?.data?.message || 'Login failed');
         } finally {
             setLoading(false);
