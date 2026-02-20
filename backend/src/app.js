@@ -10,6 +10,8 @@ const authRoutes = require('./routes/authRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const salesRoutes = require('./routes/salesRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
+const usersRoutes = require('./routes/usersRoutes');
+const suppliersRoutes = require('./routes/suppliersRoutes');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -30,6 +32,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/sales', salesRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/suppliers', suppliersRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
